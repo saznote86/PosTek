@@ -1,0 +1,27 @@
+# Histoires d'agent
+.aider*
+
+# ============================================================
+#  Périmètre du dépôt : le code POSTEK uniquement.
+#  La racine contient les données de l'existant Leo2 (WinDev 14) :
+#  bases .FIC/.ndx, exécutables, BMP, historiques de caisse…
+#  → tout est ignoré par défaut ; seuls les chemins listés
+#    ci-dessous sont ré-inclus (whitelist).
+# ============================================================
+/*
+!/postek/
+!/start.bat
+!/.gitignore
+!/.github/
+
+# Artefacts de build .NET
+bin/
+obj/
+
+# Bases de données locales de l'app POSTEK
+postek/desktop/Postek.Caisse/bin/**/*.db
+imprimante.logique
+
+# Python
+__pycache__/
+*.pyc

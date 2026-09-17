@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  tests-python:
+    name: Noyau Python (fiscal, licence, migration)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: postek
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python 3.x
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Tests unitaires (stdlib uniquement)
+        run: python -m unittest discover -s tests -v
+
+  tests-dotnet:
+    name: Caisse .NET (xUnit)
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: postek/desktop
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restorer
+        run: dotnet restore Postek.Caisse.Tests/Postek.Caisse.Tests.csproj
+
+      - name: Construire
+        run: dotnet build Postek.Caisse.Tests/Postek.Caisse.Tests.csproj --no-restore -c Release --nologo
+
+      - name: Tester
+        run: dotnet test Postek.Caisse.Tests/Postek.Caisse.Tests.csproj --no-build -c Release -v minimal
+
+  rebranding:
+    name: Garde-fou rebranding (aucun texte Atoo/Leo2 dans POSTEK)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Vérifier le code de l'application POSTEK
+        shell: bash
+        run: |
+          # L'app POSTEK (desktop) ne doit contenir aucune référence à
+          # l'application d'origine — exigence cahier des charges §3.6.
+          # (Les mentions dans postek/docs, postek/migration… documentent la
+          # migration depuis l'existant et sont volontairement exclues.)
+          if grep -RniE 'atoo|leo2' postek/desktop/Postek.Caisse \
+               --include='*.cs' --include='*.xaml' --include='*.json' \
+               -l | grep -v '/obj/' | grep -v '/bin/'; then
+            echo "::error::Références Atoo/Leo2 détectées dans le code POSTEK (voir liste ci-dessus)"
+            exit 1
+          fi
+          echo "OK : aucun texte Atoo/Leo2 dans l'application POSTEK"
