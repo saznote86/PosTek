@@ -68,11 +68,18 @@ class ExportReader:
 
     def _fichier_table(self, nom: str) -> Path | None:
         base = self._dossier_tables()
-        candidats = [base / f"{nom}.csv", base / f"{nom.upper()}.csv",
-                     base / f"{nom.lower()}.csv"]
-        for c in candidats:
+        # Candidats usuels d'abord (rapide), puis balayage insensible à la
+        # casse : un export réel peut s'appeler « Produits.csv » et un
+        # filesystem Linux distingue PRODUITS.csv de Produits.csv — la
+        # résolution ne doit pas dépendre de la sémantique de casse de l'OS.
+        for c in (base / f"{nom}.csv", base / f"{nom.upper()}.csv",
+                  base / f"{nom.lower()}.csv"):
             if c.is_file():
                 return c
+        cible = nom.upper()
+        for csv_f in sorted(base.glob("*.csv")):
+            if csv_f.stem.upper() == cible:
+                return csv_f
         return None
 
     # ------------------------------------------------------------------
