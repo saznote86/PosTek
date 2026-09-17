@@ -92,6 +92,27 @@ jobs:
           python tools/test_mix_ui.py
           python tools/test_clavier_ui.py
 
+      - name: Diagnostic en cas d'échec
+        if: failure()
+        shell: powershell
+        run: |
+          Get-Process -Name Postek.Caisse -ErrorAction SilentlyContinue |
+            Format-List Id, MainWindowTitle, Responding
+          Add-Type -AssemblyName System.Windows.Forms
+          [System.Windows.Forms.Screen]::AllScreens |
+            ForEach-Object { "Écran : $($_.Bounds)" }
+
+      - name: Artefacts de diagnostic (flux imprimante, base démo)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostic-tests-ecran
+          path: |
+            postek/desktop/Postek.Caisse/bin/Release/net8.0-windows/imprimante.logique
+            postek/desktop/Postek.Caisse/bin/Release/net8.0-windows/postek_demo.db
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Arrêter l'application
         if: always()
         shell: powershell

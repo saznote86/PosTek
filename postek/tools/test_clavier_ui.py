@@ -59,7 +59,7 @@ def _resoudre_base_demo():
     importe peu : ce qui compte, c'est la base du binaire qui tourne, car les
     répertoires Debug et Release coexistent et chacun a SA base.
     """
-    hwnd, _ = _mod.fenetre_principale()
+    hwnd, _ = _mod.attendre_fenetre_principale(timeout=10)
     if hwnd is not None:
         exe = _exe_de_fenetre(hwnd)
         if exe:
@@ -119,7 +119,7 @@ def main():
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-    hwnd, racine = _mod.fenetre_principale()
+    hwnd, racine = _mod.attendre_fenetre_principale()
     if racine is None:
         print("[!] Fenêtre principale POSTEK introuvable — lancez l'app d'abord.")
         sys.exit(1)
@@ -168,9 +168,7 @@ def main():
     time.sleep(0.4)
 
     _mod.envoyer_touche(hwnd_paiement(), VK_ESCAPE)
-    time.sleep(0.8)
-
-    assert _mod.paiement_ouvert() is None, "Échap n'a pas refermé la fenêtre"
+    assert _mod.attendre_fermeture(), "Échap n'a pas refermé la fenêtre"
     nb, _ = tickets_en_base()
     assert nb == avant, f"Échap a encaissé un ticket ({avant} → {nb}) !"
     print("[OK] 1. Échap : fenêtre refermée, ticket intact, rien en base")
@@ -184,9 +182,10 @@ def main():
     time.sleep(0.4)
 
     _mod.envoyer_touche(hwnd_paiement(), VK_RETURN)
-    time.sleep(0.8)
 
-    assert _mod.paiement_ouvert() is not None, \
+    # Attendre que l'app ait *traité* la touche : la fenêtre doit rester
+    # ouverte (guard non soldé) — on sonde pour laisser passer le traitement.
+    assert _mod.attendre_fermeture() is False, \
         "Entrée a refermé la fenêtre alors que le ticket n'était pas soldé !"
     nb, _ = tickets_en_base()
     assert nb == avant, "Entrée non soldée a encaissé un ticket !"
@@ -194,8 +193,7 @@ def main():
 
     # Sortie propre de l'étape 2 : Échap (la saisie 1,000 CB est abandonnée).
     _mod.envoyer_touche(hwnd_paiement(), VK_ESCAPE)
-    time.sleep(0.8)
-    assert _mod.paiement_ouvert() is None
+    assert _mod.attendre_fermeture()
 
     # ------------------------------------------------------------------
     # 3) Entrée sur ticket soldé = valider l'encaissement.
@@ -206,9 +204,10 @@ def main():
     time.sleep(0.4)
 
     _mod.envoyer_touche(hwnd_paiement(), VK_RETURN)
-    time.sleep(1.2)
 
-    assert _mod.paiement_ouvert() is None, "Entrée soldée n'a pas validé"
+    # Entrée soldée = valider : on attend la fermeture (jusqu'à 15 s — le
+    # traitement inclut persistance + impression ESC/POS).
+    assert _mod.attendre_fermeture(timeout=15.0), "Entrée soldée n'a pas validé"
     nb, regs = tickets_en_base()
     assert nb == avant + 1, f"ticket non persisté par Entrée ({avant} → {nb})"
     assert regs == [("cb", "1.800")], f"règlement inattendu : {regs}"

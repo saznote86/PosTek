@@ -50,7 +50,7 @@ def main():
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
-    hwnd, racine = _mod.fenetre_principale()
+    hwnd, racine = _mod.attendre_fenetre_principale()
     if racine is None:
         print("[!] Fenêtre principale POSTEK introuvable — lancez l'app d'abord.")
         sys.exit(1)
@@ -86,8 +86,7 @@ def main():
 
     # 3) F2 sur ticket plein : la fenêtre de paiement s'ouvre.
     _mod.envoyer_touche(hwnd, 0x71)
-    time.sleep(1.5)
-    paiement = _mod.paiement_ouvert()
+    paiement = _mod.attendre_fenetre("Encaissement", timeout=15.0)
     assert paiement is not None, "F2 n'a pas ouvert la fenêtre de paiement"
     a_payer = lire_a_payer(paiement)
     assert a_payer == "1,800 TND", f"« à payer » inattendu : {a_payer!r}"
@@ -95,8 +94,7 @@ def main():
 
     # 4) Retour : rien n'est encaissé.
     cliquer(find(paiement, "← Retour", "Button"))
-    time.sleep(0.8)
-    assert _mod.paiement_ouvert() is None
+    assert _mod.attendre_fermeture(), "la fenêtre ne s'est pas refermée"
     print("[OK] 4. Retour : fenêtre fermée, ticket intact, aucun encaissement")
     print("\n[RÉSULTAT] F2 = encaisser : 4/4 vérifications passées.")
 

@@ -12,6 +12,7 @@ Le script ne modifie aucune donnée : il clique comme un utilisateur.
 
 import ctypes
 import ctypes.wintypes as wt
+import os
 import sys
 import time
 
@@ -101,9 +102,10 @@ def attendre_fenetre(titre_exact, timeout=10.0):
     """Attend qu'une fenêtre dont le titre exact apparaisse ; renvoie l'élément UIA."""
     fin = time.time() + timeout
     while time.time() < fin:
-        for h, titre in fenetres_visibles():
-            if titre == titre_exact:
-                return uia_par_handle(h)
+        for seulement in (True, False):
+            for h, titre in fenetres_visibles(seulement):
+                if titre == titre_exact:
+                    return uia_par_handle(h)
         time.sleep(0.3)
     return None
 
@@ -111,13 +113,18 @@ def attendre_fenetre(titre_exact, timeout=10.0):
 EnumWindowsProc = ctypes.WINFUNCTYPE(wt.BOOL, wt.HWND, wt.LPARAM)
 
 
-def fenetres_visibles():
-    """Fenêtres visibles (hwnd, titre) via ctypes — sans pywin32."""
+def fenetres_visibles(seulement_visibles=True):
+    """Fenêtres (hwnd, titre) via ctypes — sans pywin32.
+
+    seulement_visibles=False liste aussi les fenêtres non marquées
+    WS_VISIBLE : utile sur un runner CI (session non interactive) où la
+    fenêtre WPF peut exister sans être « visible » au sens Win32.
+    """
     resultats = []
 
     @EnumWindowsProc
     def cb(hwnd, _lparam):
-        if ctypes.windll.user32.IsWindowVisible(hwnd):
+        if not seulement_visibles or ctypes.windll.user32.IsWindowVisible(hwnd):
             n = ctypes.windll.user32.GetWindowTextLengthW(hwnd)
             if n > 0:
                 buf = ctypes.create_unicode_buffer(n + 1)
@@ -144,11 +151,22 @@ def arbre(entete, fen, max_depth=9):
     dump(fen, max_depth=max_depth)
 
 
+def attendre_fermeture(timeout=8.0):
+    """True dès que la fenêtre « Encaissement » n'est plus détectée."""
+    fin = time.time() + timeout
+    while time.time() < fin:
+        if paiement_ouvert() is None:
+            return True
+        time.sleep(0.3)
+    return paiement_ouvert() is None
+
+
 def hwnd_fenetre_titre(titre_exact):
     """hwnd de la fenêtre dont le titre est exact, ou None."""
-    for h, t in fenetres_visibles():
-        if t == titre_exact:
-            return h
+    for seulement in (True, False):
+        for h, t in fenetres_visibles(seulement):
+            if t == titre_exact:
+                return h
     return None
 
 
@@ -176,9 +194,9 @@ def texte_total_principal(racine):
     return ""
 
 
-def fenetre_principale():
-    """Fenêtre principale = celle qui contient le bouton « Encaisser »."""
-    for h, t in fenetres_visibles():
+def _chercher_principale(candidats):
+    """Fenêtre (hwnd, élément) contenant le bouton « Encaisser », ou (None, None)."""
+    for h, t in candidats:
         if "POSTEK" not in t:
             continue
         el = uia_par_handle(h)
@@ -187,11 +205,40 @@ def fenetre_principale():
     return None, None
 
 
+def fenetre_principale():
+    """Fenêtre principale = celle qui contient le bouton « Encaisser ».
+
+    Recherche d'abord parmi les fenêtres visibles, puis sans le filtre de
+    visibilité (runner CI en session non interactive).
+    """
+    hwnd, el = _chercher_principale(fenetres_visibles())
+    if el is not None:
+        return hwnd, el
+    return _chercher_principale(fenetres_visibles(seulement_visibles=False))
+
+
+def attendre_fenetre_principale(timeout=None):
+    """fenetre_principale() en patientant — le démarrage WPF peut être lent
+    (runner CI froid, JIT, rendu logiciel). Timeout par défaut réglable par
+    la variable d'environnement POSTEK_ATTENTE_APP (30 s)."""
+    if timeout is None:
+        timeout = float(os.environ.get("POSTEK_ATTENTE_APP", "30"))
+    fin = time.time() + timeout
+    while True:
+        hwnd, el = fenetre_principale()
+        if el is not None:
+            return hwnd, el
+        if time.time() >= fin:
+            return None, None
+        time.sleep(0.5)
+
+
 def paiement_ouvert():
     """Élément UIA de la fenêtre « Encaissement », ou None."""
-    for h, t in fenetres_visibles():
-        if t == "Encaissement":
-            return uia_par_handle(h)
+    for seulement in (True, False):
+        for h, t in fenetres_visibles(seulement):
+            if t == "Encaissement":
+                return uia_par_handle(h)
     return None
 
 
@@ -210,22 +257,13 @@ def main():
     # L'app vient peut-être d'être (re)lancée : on laisse WPF monter la fenêtre.
     time.sleep(2.0)
 
-    visibles = [(h, t) for h, t in fenetres_visibles() if "POSTEK" in t]
-    if not visibles:
-        print("[!] Aucune fenêtre POSTEK visible")
-        sys.exit(1)
-    # Fenêtre principale = celle qui contient le bouton « Encaisser »
-    # (écarte les boîtes de dialogue Clôture Z / paiements éventuelles).
-    racine = None
-    for h, titre in visibles:
-        cand = uia_par_handle(h)
-        if find_by_name(cand, "Encaisser", "Button") is not None:
-            racine = cand
-            print(f"[*] Fenêtre principale : {titre!r} (hwnd={h})")
-            break
+    hwnd, racine = attendre_fenetre_principale()
     if racine is None:
-        print("[!] Écran principal (bouton Encaisser) introuvable parmi :", visibles)
+        print("[!] Écran principal (bouton Encaisser) introuvable — fenêtres présentes :")
+        for h, t in fenetres_visibles(seulement_visibles=False):
+            print(f"    - hwnd={h} titre={t!r}")
         sys.exit(1)
+    print(f"[*] Fenêtre principale (hwnd={hwnd})")
 
     # Idempotence : referme une fenêtre de paiement restée ouverte et vide
     # le ticket en cours pour repartir de zéro.
