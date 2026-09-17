@@ -82,6 +82,13 @@ def cmd_empreinte(_args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Environnements à sortie non UTF-8 (CI Linux, redirection, console
+    # héritée) : ne jamais planter sur l'affichage des messages accentués —
+    # les caractères non encodables sont remplacés, le résultat est inchangé.
+    for flux in (sys.stdout, sys.stderr):
+        if hasattr(flux, "reconfigure"):
+            flux.reconfigure(errors="replace")
+
     parseur = argparse.ArgumentParser(prog="keygen", description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     sous = parseur.add_subparsers(dest="commande", required=True)

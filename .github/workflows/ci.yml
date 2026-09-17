@@ -5,6 +5,11 @@ on:
     branches: [main, master]
   pull_request:
 
+env:
+  # Sorties Python en UTF-8 sur tous les runners (la locale par défaut
+  # d'ubuntu-latest fait planter les print accentués en ASCII strict).
+  PYTHONUTF8: "1"
+
 jobs:
   tests-python:
     name: Noyau Python (fiscal, licence, migration)
