@@ -58,16 +58,32 @@ def dump(el, depth=0, max_depth=8):
         child = walker.GetNextSiblingElement(child)
 
 
-def find_by_name(root, name, cls=None):
+def _find_by_name_rec(root, name, cls):
     walker = _uia.ControlViewWalker
     child = walker.GetFirstChildElement(root)
     while child:
         if element_name(child) == name and (cls is None or child.CurrentClassName == cls):
             return child
-        found = find_by_name(child, name, cls)
+        found = _find_by_name_rec(child, name, cls)
         if found is not None:
             return found
         child = walker.GetNextSiblingElement(child)
+    return None
+
+
+def find_by_name(root, name, cls=None):
+    """Recherche par nom avec reprise : l'arbre UIA peut être momentanément
+    indisponible (COMError 0x80040201) pendant un rafraîchissement de la
+    fenêtre — on retente brièvement avant d'abandonner."""
+    dernier = None
+    for _ in range(6):
+        try:
+            return _find_by_name_rec(root, name, cls)
+        except comtypes.COMError as e:
+            dernier = e
+            time.sleep(0.25)
+    if dernier is not None:
+        raise dernier
     return None
 
 
@@ -126,6 +142,38 @@ _uia = comtypes.client.CreateObject(
 def arbre(entete, fen, max_depth=9):
     print(f"\n===== {entete} =====")
     dump(fen, max_depth=max_depth)
+
+
+def hwnd_fenetre_titre(titre_exact):
+    """hwnd de la fenêtre dont le titre est exact, ou None."""
+    for h, t in fenetres_visibles():
+        if t == titre_exact:
+            return h
+    return None
+
+
+def champ_saisie(fen):
+    """Texte affiché dans la zone de saisie du pavé (1er texte « TND »)."""
+    w = _uia.RawViewWalker
+    c = w.GetFirstChildElement(fen)
+    while c:
+        n = element_name(c)
+        if "TND" in n:
+            return n
+        c = w.GetNextSiblingElement(c)
+    return ""
+
+
+def texte_total_principal(racine):
+    """Libellé « Total : … » de la fenêtre principale (ou « »)."""
+    w = _uia.RawViewWalker
+    c = w.GetFirstChildElement(racine)
+    while c:
+        n = element_name(c)
+        if n.startswith("Total :"):
+            return n
+        c = w.GetNextSiblingElement(c)
+    return ""
 
 
 def fenetre_principale():

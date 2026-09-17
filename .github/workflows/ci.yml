@@ -46,6 +46,57 @@ jobs:
       - name: Tester
         run: dotnet test Postek.Caisse.Tests/Postek.Caisse.Tests.csproj --no-build -c Release -v minimal
 
+  tests-ecran:
+    name: Tests écran UIA (app lancée)
+    runs-on: windows-latest
+    needs: tests-dotnet
+    defaults:
+      run:
+        working-directory: postek
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Python 3.x
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Construire l'application (Release)
+        working-directory: postek/desktop
+        run: dotnet build Postek.Caisse/Postek.Caisse.csproj -c Release --nologo
+
+      - name: Pilote UIA (comtypes)
+        run: pip install comtypes
+
+      - name: Lancer l'application
+        shell: powershell
+        run: |
+          # PowerShell Start-Process : le processus survit à la fin du pas
+          # (un lancement bash le tuerait avec le shell) ; ne PAS utiliser
+          # -WindowStyle Hidden, qui masque la fenêtre WPF à UIA.
+          $bin = Join-Path (Get-Location) "desktop\Postek.Caisse\bin\Release\net8.0-windows"
+          Start-Process -FilePath (Join-Path $bin "Postek.Caisse.exe") -WorkingDirectory $bin
+          Start-Sleep -Seconds 6
+          if (-not (Get-Process -Name Postek.Caisse -ErrorAction SilentlyContinue)) {
+            throw "L'application POSTEK ne s'est pas lancée"
+          }
+
+      - name: Tests écran (F2, mixte, raccourcis clavier paiement)
+        run: |
+          python tools/test_f2_ui.py
+          python tools/test_mix_ui.py
+          python tools/test_clavier_ui.py
+
+      - name: Arrêter l'application
+        if: always()
+        shell: powershell
+        run: Stop-Process -Name Postek.Caisse -Force -ErrorAction SilentlyContinue
+
   rebranding:
     name: Garde-fou rebranding (aucun texte Atoo/Leo2 dans POSTEK)
     runs-on: ubuntu-latest

@@ -97,3 +97,6 @@ Touchez **Clôture Z** sur l'écran principal :
   d'arrondi flottant, l'affiché = le comptabilisé.
 - Raccourci de test : `start.bat --test-impression [nom-imprimante]`
   envoie une page de test à l'imprimante indiquée.
+- Les parcours décrits ici (F2, raccourcis clavier, encaissement mixte)
+  sont rejouables automatiquement à l'écran — voir
+  `docs/GUIDE_TESTS_ECRAN.md`.
