@@ -223,6 +223,52 @@ public class TicketEscPosTests
     }
 
     [Fact]
+    public void RapportZ_RenduImprime_QuandPositif()
+    {
+        var donnees = new DonneesRapportZ
+        {
+            Numero = 7,
+            NbTickets = 2,
+            TotalTtc = 3.000m,
+            TotalHt = 2.616m,
+            TotalTva = 0.384m,
+            Reglements = new LigneReglementImpression[]
+            {
+                new("ESPECES", 3.200m),   // montants reçus : TTC 3,000 + rendu 0,200
+                new("CB", 0.500m),
+            },
+            MonnaieRendue = 0.200m,
+        };
+
+        var texte = Decode(TicketEscPos.GenererRapportZ(donnees)).Texte;
+
+        Assert.Contains("RENDU", texte);
+        Assert.Contains("0,200", texte);
+        // ESPECES reste le montant reçu (3,200), RENDU l'explicite.
+        Assert.Contains("3,200", texte);
+    }
+
+    [Fact]
+    public void RapportZ_SansRendu_AucuneLigneRendu()
+    {
+        var donnees = new DonneesRapportZ
+        {
+            Numero = 8,
+            NbTickets = 1,
+            TotalTtc = 2.400m,
+            Reglements = new LigneReglementImpression[]
+            {
+                new("CB", 2.400m),
+            },
+            MonnaieRendue = 0m,
+        };
+
+        var texte = Decode(TicketEscPos.GenererRapportZ(donnees)).Texte;
+
+        Assert.DoesNotContain("RENDU", texte);
+    }
+
+    [Fact]
     public void RapportZ_Flux_DemarreParInitEtTermineParDecoupe()
     {
         var flux = TicketEscPos.GenererRapportZ(new DonneesRapportZ { Numero = 1 });
@@ -238,7 +284,7 @@ public class TicketEscPosTests
     }
 
     // ------------------------------------------------------------------
-    private static (string Texte, List<byte> Brut) Decode(byte[] flux)
+    internal static (string Texte, List<byte> Brut) Decode(byte[] flux)
     {
         // Miroir exact du générateur : on retire les commandes ESC/POS
         // (ESC + lettre + paramètre éventuel) et on inverse le mappage manuel

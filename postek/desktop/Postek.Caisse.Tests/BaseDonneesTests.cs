@@ -238,4 +238,109 @@ public class BaseDonneesTests : IDisposable
 
         Assert.Empty(_bdd.RecapParModeNonClotures());
     }
+
+    // ------------------------------------------------------------------
+    // Encaissement mixte espèces + CB avec rendu monnaie (bout en bout :
+    // cœur métier → persistance → impression, fidèle à OuvrirPaiement).
+    // ------------------------------------------------------------------
+    [Fact]
+    public void EncaissementMixte_EspecesEtCb_AvecRendu_PersisteEtImprime()
+    {
+        // ----- Parcours UI : café ×2 (2,400 à 19 %) + croissant (0,600 à 13 %).
+        var caisse = new CaisseService();
+        caisse.Ajouter(new("P005", "Café express", 1.200m, 0.190m), 2m);
+        caisse.Ajouter(new("P002", "Croissant", 0.600m, 0.130m), 1m);
+        Assert.Equal(3.000m, caisse.TotalTtc);
+
+        // CB d'abord : 1,000 (plafonné au reste à payer, ne rend jamais monnaie).
+        caisse.Regler(ModeReglement.CarteBancaire, 1.000m);
+        Assert.Equal(2.000m, caisse.ResteAPayer);
+
+        // Espèces ensuite : 2,500 reçues pour 2,000 dus → trop perçu 0,500.
+        caisse.Regler(ModeReglement.Especes, 2.500m);
+        Assert.True(caisse.EstSolde);
+        Assert.Equal(-0.500m, caisse.ResteAPayer);
+        Assert.Equal(0.500m, caisse.MonnaieARendre);   // plafonné aux espèces reçues
+
+        // ----- Validation : persistance AVANT vidage (ordre de OuvrirPaiement).
+        var numero = caisse.NumeroTicket;
+        var reglements = caisse.Reglements.ToList();
+        _bdd.EnregistrerTicket(numero, caisse, reglements);
+        var total = caisse.Encaisser();
+
+        Assert.Equal(3.000m, total);
+        Assert.Equal(0, caisse.Reglements.Count);      // vidée pour le ticket suivant
+
+        // ----- En base : total, deux règlements distincts espèces + CB.
+        Assert.Equal(3.000m, _bdd.TotalDunTicket(numero));
+        var relus = _bdd.ReglementsDunTicket(numero);
+        Assert.Equal(2, relus.Count);
+        Assert.Equal(ModeReglement.CarteBancaire, relus[0].Mode);
+        Assert.Equal(1.000m, relus[0].Montant);
+        Assert.Equal(ModeReglement.Especes, relus[1].Mode);
+        Assert.Equal(2.500m, relus[1].Montant);
+
+        // ----- Ticket imprimé : les deux modes + la ligne RENDU.
+        var donnees = new DonneesTicket
+        {
+            NumeroTicket = numero,
+            TotalTtc = total,
+            Lignes = _bdd.LignesDunTicket(numero)
+                .Select(l => new LigneTicketImpression(
+                    l.Designation, l.Quantite, l.PrixTtc, l.TotalLigne))
+                .ToList(),
+            RecapTva = _bdd.RecapTvaDunTicket(numero)
+                .Select(r => new LigneRecapTvaImpression(r.Taux * 100, r.Ht, r.Tva))
+                .ToList(),
+            Reglements = relus.Select(r => new LigneReglementImpression(
+                    ModesReglement.LibelleTicket(r.Mode), r.Montant))
+                .ToList(),
+            MonnaieRendue = 0.500m,                        // trop perçu du ticket validé
+        };
+        var texte = TicketEscPosTestRunner.DecodePublique(
+            TicketEscPos.Generer(donnees));
+
+        Assert.Contains("CB", texte);
+        Assert.Contains("1,000", texte);
+        Assert.Contains("ESPECES", texte);
+        Assert.Contains("2,500", texte);
+        Assert.Contains("RENDU", texte);
+        Assert.Contains("0,500", texte);
+
+        // ----- Clôture Z : agrégats par mode conformes, ventes = règlements.
+        var z = _bdd.RecapZCourant();
+        Assert.Equal(1, z.NbTickets);
+        Assert.Equal(3.000m, z.TotalTtc);
+        Assert.Equal(2, z.ReglementsParMode.Count);
+        Assert.Equal(ModeReglement.Especes, z.ReglementsParMode[0].Mode);
+        Assert.Equal(2.500m, z.ReglementsParMode[0].Total);
+        Assert.Equal(ModeReglement.CarteBancaire, z.ReglementsParMode[1].Mode);
+        Assert.Equal(1.000m, z.ReglementsParMode[1].Total);
+        // Les règlements stockent les montants REÇUS : la somme dépasse le TTC
+        // du trop perçu en espèces — rendu = 0,500 ici.
+        Assert.Equal(3.500m, z.TotalRegle);
+        Assert.Equal(3.000m, z.TotalRegle - 0.500m);   // TTC + rendu = reçu
+        // Rendu dérivé de la période : ce que l'imprimé Z affichera.
+        Assert.Equal(0.500m, z.MonnaieRendue);
+    }
+
+    [Fact]
+    public void RecapZ_SansRendu_MonnaieRendueNulle()
+    {
+        var caisse = CaisseAvecUnArticle();          // 2,400 réglés au juste prix
+        _bdd.EnregistrerTicket(caisse.NumeroTicket, caisse,
+            new Reglement[] { new(ModeReglement.Especes, 2.400m) });
+        caisse.Encaisser();
+
+        var z = _bdd.RecapZCourant();
+
+        Assert.Equal(0m, z.MonnaieRendue);           // rien n'est rendu
+    }
+}
+
+/// <summary>Pont vers le décodeur de test privé de TicketEscPosTests.</summary>
+public static class TicketEscPosTestRunner
+{
+    public static string DecodePublique(byte[] flux) =>
+        TicketEscPosTests.Decode(flux).Texte;
 }

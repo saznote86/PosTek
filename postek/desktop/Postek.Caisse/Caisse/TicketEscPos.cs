@@ -62,6 +62,12 @@ public sealed class DonneesRapportZ
     public IReadOnlyList<LigneReglementImpression> Reglements { get; init; } =
         Array.Empty<LigneReglementImpression>();
 
+    /// <summary>
+    /// Rendu monnaie de la période (espèces) — imprimé en ligne dédiée si > 0.
+    /// Dérivé côté appelant : RecaZ.MonnaieRendue (= montants reçus − ventes).
+    /// </summary>
+    public decimal MonnaieRendue { get; init; }
+
     public string? Pied { get; init; }
 }
 
@@ -220,6 +226,14 @@ public static class TicketEscPos
         foreach (var r in z.Reglements)
         {
             LigneDeuxColonnes(w, r.Libelle, Formate(r.Montant), colonnes);
+        }
+        if (z.MonnaieRendue > 0m)
+        {
+            // Ligne dédiée RENDU : les espèces affichées sont les montants REÇUS,
+            // l'imprimé doit montrer explicitement ce qui est retourné au client.
+            w.Write(GrasOn);
+            LigneDeuxColonnes(w, "RENDU", Formate(z.MonnaieRendue), colonnes);
+            w.Write(GrasOff);
         }
         LigneTirets(w, colonnes);
 

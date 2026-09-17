@@ -18,7 +18,8 @@ desktop .NET/WPF). Lancement : `start.bat` à la racine du projet.
 
 ## 2. Ouvrir l'encaissement
 
-Touchez **Encaisser** : la fenêtre de paiement s'ouvre sur le ticket en cours.
+Touchez **Encaisser** (ou appuyez sur **F2** — sans effet si le ticket est vide) :
+la fenêtre de paiement s'ouvre sur le ticket en cours.
 
 - À gauche : le montant **à payer**, le **reste à payer** après chaque
   règlement saisi, et la liste des règlements déjà saisis (supprimables
@@ -27,10 +28,11 @@ Touchez **Encaisser** : la fenêtre de paiement s'ouvre sur le ticket en cours.
 
 Raccourcis clavier (utile avec un clavier branché) :
 
-| Touche  | Action                |
-|---------|-----------------------|
-| `Entrée`| Valider l'encaissement|
-| `Échap` | Annuler et revenir    |
+| Touche   | Action                          |
+|----------|---------------------------------|
+| `F2`     | Ouvrir l'encaissement (écran principal) |
+| `Entrée` | Valider l'encaissement (fenêtre paiement) |
+| `Échap`  | Annuler et revenir (fenêtre paiement)     |
 
 ## 3. Saisir les règlements (multi-paiement)
 

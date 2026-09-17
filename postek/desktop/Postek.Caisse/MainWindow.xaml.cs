@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using Postek.Caisse.Caisse;
 
@@ -43,6 +44,19 @@ public partial class MainWindow : Window
             };
             bouton.Click += SurArticle;
             PanneauArticles.Children.Add(bouton);
+        }
+    }
+
+    // Raccourci clavier F2 = encaisser le ticket en cours. On passe par
+    // SurEncaisser pour bénéficier de la garde « ticket vide » du bouton —
+    // OuvrirPaiement() direct ouvrirait une fenêtre de paiement sur rien.
+    protected override void OnPreviewKeyDown(KeyEventArgs e)
+    {
+        base.OnPreviewKeyDown(e);
+        if (e.Key == Key.F2)
+        {
+            e.Handled = true;
+            SurEncaisser(this, new RoutedEventArgs());
         }
     }
 
@@ -154,6 +168,7 @@ public partial class MainWindow : Window
                     l.TauxTva * 100, l.TotalHt, l.TotalTva)).ToList(),
                 Reglements = z.ReglementsParMode.Select(m => new LigneReglementImpression(
                     ModesReglement.LibelleTicket(m.Mode), m.Total)).ToList(),
+                MonnaieRendue = z.MonnaieRendue,
                 Pied = "À bientôt !",
             };
 

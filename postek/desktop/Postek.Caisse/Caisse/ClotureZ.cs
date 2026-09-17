@@ -24,6 +24,19 @@ public record RecapZ(
     IReadOnlyList<LigneZTva> LignesTva,
     IReadOnlyList<LigneZMode> ReglementsParMode)
 {
-    /// <summary>Somme des règlements de la période — doit égaler TotalTtc.</summary>
+    /// <summary>
+    /// Somme des règlements de la période, montants REÇUS (les espèces incluent
+    /// le trop perçu rendu au client) : égale TotalTtc + rendu monnaie rendu.
+    /// </summary>
     public decimal TotalRegle => ReglementsParMode.Sum(m => m.Total);
+
+    /// <summary>
+    /// Rendu monnaie de la période : trop perçu total = montants reçus − ventes.
+    /// Le parcours d'encaissement plafonne le rendu aux espèces reçues et les
+    /// autres modes au reste à payer, donc le trop perçu EST le rendu.
+    /// Dérivé, jamais stocké — cohérent par construction avec TotalRegle.
+    /// </summary>
+    public decimal MonnaieRendue =>
+        decimal.Round(TotalRegle - TotalTtc, 3, MidpointRounding.AwayFromZero) > 0m
+            ? TotalRegle - TotalTtc : 0m;
 }
