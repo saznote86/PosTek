@@ -25,3 +25,7 @@ imprimante.logique
 # Python
 __pycache__/
 *.pyc
+
+# Données réelles de migration (client) : hors dépôt
+export_leo2/
+postek/donnees/

@@ -35,7 +35,7 @@ EXPORTS = {
         ["F02", "PÂTISSERIE"],
     ],
     "Produits.csv": [
-        ["REF", "DESIGNATION", "CODBAR", "PVTTTC", "PRIXACHAT", "STOCK", "FAMILLE", "CODETVa"],
+        ["REF", "DESIGNATION", "CODBAR", "PVTTTC", "PRIXACHAT", "STOCK", "FAMILLE", "CODETVA"],
         ["P001", "Baguette tradition", "6191234500017", "0,250", "0,180", "120", "F01", "7"],
         ["P002", "Croissant", "6191234500024", "0,600", "0,400", "80", "F02", "13"],
     ],

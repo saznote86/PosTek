@@ -98,12 +98,13 @@ MAPPINGS: dict[str, MappingTable] = {m.source.upper(): m for m in [
         champs=[
             ConversionChamp("REF", "code"),
             ConversionChamp("DESIGNATION", "designation", "trim"),
-            ConversionChamp("CODBAR", "code_barres"),
+            # trim : code-barres vide = pas de code-barres → NULL (UNIQUE OK)
+            ConversionChamp("CODBAR", "code_barres", "trim"),
             ConversionChamp("PVTTTC", "prix_ttc", "montant"),
             ConversionChamp("PRIXACHAT", "prix_achat", "montant"),
             ConversionChamp("STOCK", "stock"),
             ConversionChamp("FAMILLE", "famille_code"),
-            ConversionChamp("CODETVa", "taux_tva_code"),
+            ConversionChamp("CODETVA", "taux_tva_code"),
         ],
     ),
     MappingTable(
