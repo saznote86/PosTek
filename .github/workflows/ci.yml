@@ -20,13 +20,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Python 3.x
+      - name: Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
+          python-version: "3.12"
 
       - name: Tests unitaires (stdlib uniquement)
-        run: python -m unittest discover -s tests -v
+        run: |
+          set -o pipefail
+          python -m unittest discover -s tests -v 2>&1 | tee /tmp/tests.log
+
+      - name: Diagnostic (si échec)
+        if: failure()
+        run: |
+          echo "Python : $(python -VV)"
+          locale 2>/dev/null || true
+          # Remonter le traceback dans les annotations (lisibles via API) :
+          grep -E "(Traceback|Error|Exception|FAIL|assert)" /tmp/tests.log \
+            | head -12 \
+            | while IFS= read -r ligne; do echo "::error::$ligne"; done
 
   tests-dotnet:
     name: Caisse .NET (xUnit)
