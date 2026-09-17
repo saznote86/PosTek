@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Postek.Caisse.Caisse;
 
 namespace Postek.Caisse;
@@ -42,6 +43,30 @@ public partial class FenetrePaiement : Window
                 foreach (var r in _caisse.Reglements.ToList())
                     _caisse.SupprimerReglement(r);
         };
+    }
+
+    // ------------------------------------------------------------------
+    // Raccourcis clavier : Entrée = valider, Échap = annuler.
+    // PreviewKeyDown : capté avant tout contrôle ayant le focus ; la touche
+    // est marquée traitée pour qu'un bouton focalisé ne double-déclenche pas.
+    // ------------------------------------------------------------------
+    protected override void OnPreviewKeyDown(KeyEventArgs e)
+    {
+        base.OnPreviewKeyDown(e);
+        switch (e.Key)
+        {
+            case Key.Enter or Key.Return:
+                if (BoutonValider.IsEnabled)
+                {
+                    e.Handled = true;
+                    SurValider(this, new RoutedEventArgs());
+                }
+                break;
+            case Key.Escape:
+                e.Handled = true;
+                SurRetour(this, new RoutedEventArgs());
+                break;
+        }
     }
 
     // ------------------------------------------------------------------

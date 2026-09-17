@@ -43,6 +43,28 @@ public sealed class DonneesTicket
 /// <summary>Règlement imprimé en pied de ticket.</summary>
 public record LigneReglementImpression(string Libelle, decimal Montant);
 
+/// <summary>Données à imprimer pour le rapport de clôture Z (80 mm).</summary>
+public sealed class DonneesRapportZ
+{
+    public string EnTete { get; init; } = "POSTEK";
+    public int Numero { get; init; }
+    public DateTime DateHeure { get; init; } = DateTime.Now;
+    public int NbTickets { get; init; }
+    public decimal TotalTtc { get; init; }
+    public decimal TotalHt { get; init; }
+    public decimal TotalTva { get; init; }
+
+    /// <summary>Récap TVA par taux (exigence fiscale NACEF).</summary>
+    public IReadOnlyList<LigneRecapTvaImpression> RecapTva { get; init; } =
+        Array.Empty<LigneRecapTvaImpression>();
+
+    /// <summary>Totaux par mode de règlement de la période.</summary>
+    public IReadOnlyList<LigneReglementImpression> Reglements { get; init; } =
+        Array.Empty<LigneReglementImpression>();
+
+    public string? Pied { get; init; }
+}
+
 /// <summary>Article imprimé sur le ticket.</summary>
 public record LigneTicketImpression(
     string Designation,
@@ -151,6 +173,66 @@ public static class TicketEscPos
             LigneCentree(w, m, colonnes, PoliceNormale);
         if (!string.IsNullOrWhiteSpace(t.Pied))
             LigneCentree(w, t.Pied!, colonnes, PoliceNormale);
+
+        // Sauts + découpe partielle.
+        w.Write(new byte[] { 0x0A, 0x0A, 0x0A });
+        w.Write(Decoupe);
+
+        w.Flush();
+        return flux.ToArray();
+    }
+
+    // -----------------------------------------------------------------
+    // Rapport de clôture Z : récap fiscal + règlements de la période.
+    // Même gabarit 80 mm que le ticket — pas de détail article, uniquement
+    // les totaux rattachés à la clôture (cf. fichier Dern_Z de l'existant).
+    // -----------------------------------------------------------------
+    public static byte[] GenererRapportZ(DonneesRapportZ z) =>
+        GenererRapportZ(z, ColonnesPoliceA);
+
+    public static byte[] GenererRapportZ(DonneesRapportZ z, int colonnes)
+    {
+        var flux = new MemoryStream();
+        using var w = new BinaryWriter(flux, Encoding.ASCII, leaveOpen: true);
+
+        w.Write(Init);
+
+        // ----- En-tête -----
+        LigneCentree(w, z.EnTete, colonnes, DoubleLargeurHauteur);
+        LigneCentree(w, $"RAPPORT Z n° {z.Numero}", colonnes, DoubleHauteur);
+        LigneCentree(w, z.DateHeure.ToString("dd/MM/yyyy HH:mm"), colonnes, PoliceNormale);
+        LigneTirets(w, colonnes);
+
+        // ----- Volumétrie -----
+        LigneDeuxColonnes(w, "Tickets", Formate(z.NbTickets), colonnes);
+        LigneTirets(w, colonnes);
+
+        // ----- Récap TVA par taux (exigence fiscale) -----
+        foreach (var r in z.RecapTva)
+        {
+            LigneDeuxColonnes(w,
+                $"TVA {FormateTaux(r.Taux)}%  HT {Formate(r.Ht)}  TVA {Formate(r.Tva)}",
+                Formate(r.Ttc), colonnes);
+        }
+        LigneTirets(w, colonnes);
+
+        // ----- Règlements par mode -----
+        foreach (var r in z.Reglements)
+        {
+            LigneDeuxColonnes(w, r.Libelle, Formate(r.Montant), colonnes);
+        }
+        LigneTirets(w, colonnes);
+
+        // ----- Totaux -----
+        w.Write(DoubleLargeurHauteur);
+        LigneDeuxColonnes(w, "TOTAL TTC", $"{Formate(z.TotalTtc)} TND", colonnes);
+        w.Write(PoliceNormale);
+        LigneDeuxColonnes(w, "dont HT", Formate(z.TotalHt), colonnes);
+        LigneDeuxColonnes(w, "dont TVA", Formate(z.TotalTva), colonnes);
+        LigneTirets(w, colonnes);
+
+        if (!string.IsNullOrWhiteSpace(z.Pied))
+            LigneCentree(w, z.Pied!, colonnes, PoliceNormale);
 
         // Sauts + découpe partielle.
         w.Write(new byte[] { 0x0A, 0x0A, 0x0A });

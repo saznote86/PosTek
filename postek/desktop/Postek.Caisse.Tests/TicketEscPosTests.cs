@@ -187,6 +187,57 @@ public class TicketEscPosTests
     }
 
     // ------------------------------------------------------------------
+    // Rapport de clôture Z
+    // ------------------------------------------------------------------
+    [Fact]
+    public void RapportZ_ContientRecapTvaEtTotaux()
+    {
+        var donnees = new DonneesRapportZ
+        {
+            Numero = 3,
+            NbTickets = 4,
+            TotalTtc = 19.450m,
+            TotalHt = 16.930m,
+            TotalTva = 2.520m,
+            RecapTva = new LigneRecapTvaImpression[]
+            {
+                new(19m, 16.930m, 2.520m),
+            },
+            Reglements = new LigneReglementImpression[]
+            {
+                new("ESPECES", 13.500m),
+                new("TICKET RESTO", 5.950m),
+            },
+        };
+
+        var texte = Decode(TicketEscPos.GenererRapportZ(donnees)).Texte;
+
+        Assert.Contains("RAPPORT Z n° 3", texte);
+        Assert.Contains("TVA 19%", texte);
+        Assert.Contains("ESPECES", texte);
+        Assert.Contains("13,500", texte);
+        Assert.Contains("TICKET RESTO", texte);
+        Assert.Contains("5,950", texte);
+        Assert.Contains("TOTAL TTC", texte);
+        Assert.Contains("19,450", texte);
+    }
+
+    [Fact]
+    public void RapportZ_Flux_DemarreParInitEtTermineParDecoupe()
+    {
+        var flux = TicketEscPos.GenererRapportZ(new DonneesRapportZ { Numero = 1 });
+
+        Assert.True(flux.Length > 2);
+        Assert.Equal(0x1B, flux[0]);              // ESC
+        Assert.Equal((byte)'@', flux[1]);         // init
+
+        var n = flux.Length;
+        Assert.Equal(0x1B, flux[n - 3]);          // découpe partielle
+        Assert.Equal((byte)'d', flux[n - 2]);
+        Assert.Equal((byte)3, flux[n - 1]);
+    }
+
+    // ------------------------------------------------------------------
     private static (string Texte, List<byte> Brut) Decode(byte[] flux)
     {
         // Miroir exact du générateur : on retire les commandes ESC/POS

@@ -131,6 +131,43 @@ public partial class MainWindow : Window
         }
     }
 
+    /// <summary>
+    /// Impression automatique du rapport Z au moment de la clôture — mêmes
+    /// conventions que le ticket (ESC/POS 80 mm, CP-863). Un souci d'impression
+    /// ne remet jamais en cause la clôture, déjà persistée.
+    /// </summary>
+    private void ImprimerRapportZ(RecapZ z)
+    {
+        try
+        {
+            var theme = App.ThemeCourant;
+            var donnees = new DonneesRapportZ
+            {
+                EnTete = App.BrandCourant.Nom,
+                Numero = z.Numero,
+                DateHeure = DateTime.Now,
+                NbTickets = z.NbTickets,
+                TotalTtc = z.TotalTtc,
+                TotalHt = z.TotalHt,
+                TotalTva = z.TotalTva,
+                RecapTva = z.LignesTva.Select(l => new LigneRecapTvaImpression(
+                    l.TauxTva * 100, l.TotalHt, l.TotalTva)).ToList(),
+                Reglements = z.ReglementsParMode.Select(m => new LigneReglementImpression(
+                    ModesReglement.LibelleTicket(m.Mode), m.Total)).ToList(),
+                Pied = "À bientôt !",
+            };
+
+            var flux = TicketEscPos.GenererRapportZ(donnees);
+            ImprimanteBrute.Envoyer(flux, theme.Imprimante);
+        }
+        catch (Exception ex)
+        {
+            // La clôture est déjà persistée : on signale, sans annuler.
+            MessageBox.Show(this, $"Rapport Z non imprimé : {ex.Message}", "POSTEK",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
     private void RafraichirTotal()
     {
         TexteTotal.Text = $"Total : {_caisse.TotalTtc:0.000} TND";
@@ -176,6 +213,7 @@ public partial class MainWindow : Window
         if (confirmation != MessageBoxResult.Yes) return;
 
         _bdd.CloturerZ(z);
+        ImprimerRapportZ(z);
 
         MessageBox.Show(
             this,
