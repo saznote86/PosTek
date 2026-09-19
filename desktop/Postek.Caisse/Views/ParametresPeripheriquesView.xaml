@@ -1,0 +1,35 @@
+<UserControl x:Class="Postec.Caisse.Views.ParametresPeripheriquesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource CouleurFond}"
+             AutomationProperties.AutomationId="ParametresPeripheriquesView"
+             AutomationProperties.Name="VueParametresPeripheriques"
+             Focusable="True"
+             IsTabStop="True">
+    <DockPanel Margin="24">
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,16,0,0">
+            <TextBlock Text="{Binding Message}" Foreground="{DynamicResource CouleurTexteSecondaire}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            <Button DockPanel.Dock="Right" Content="Retour" Command="{Binding RetourCommand}" Width="140" Style="{StaticResource PostecButtonSuccess}"/>
+        </DockPanel>
+        <TextBlock DockPanel.Dock="Top" Text="Paramètres généraux - Périphériques" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource CouleurPrimaire}" Margin="0,0,0,16"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <Border Style="{StaticResource PostecCarte}" Margin="0,0,0,14">
+                    <StackPanel><TextBlock Text="Informations système" AutomationProperties.Name="Informations système" Style="{StaticResource PostecLabel}"/>
+                        <DataGrid ItemsSource="{Binding Informations}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" Margin="0,8,0,0">
+                            <DataGrid.Columns><DataGridTextColumn Header="Code" Binding="{Binding Code}" Width="170"/><DataGridTextColumn Header="Valeur" Binding="{Binding Valeur}" Width="*"/></DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource PostecCarte}" Margin="0,0,0,14">
+                    <StackPanel><TextBlock Text="Test ports COM" Style="{StaticResource PostecLabel}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0"><ComboBox ItemsSource="{Binding Ports}" SelectedItem="{Binding Port}" Width="120" Height="36"/><TextBox Text="{Binding BaudRate, UpdateSourceTrigger=PropertyChanged}" Width="100" Height="36" Margin="8,0" Padding="6"/><Button Content="Tester port COM" AutomationProperties.Name="Tester port COM" Command="{Binding TesterPortCommand}" Style="{StaticResource PostecButton}"/><Button Content="Ouvrir tiroir" AutomationProperties.Name="Ouvrir tiroir" Command="{Binding OuvrirTiroirCommand}" Style="{StaticResource PostecButton}"/><Button Content="État tiroir fermé ?" Command="{Binding EtatTiroirCommand}" Style="{StaticResource PostecButton}"/></StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource PostecCarte}">
+                    <StackPanel><TextBlock Text="Imprimantes Windows" Style="{StaticResource PostekLabel}"/><ComboBox ItemsSource="{Binding Imprimantes}" SelectedItem="{Binding ImprimanteParDefaut, Mode=OneWay}" Height="36" Margin="0,10,0,4"/><TextBlock Text="{Binding ImprimanteParDefaut, StringFormat=Imprimante par défaut : {0}}" Foreground="{DynamicResource CouleurTexteSecondaire}"/></StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

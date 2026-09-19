@@ -1,0 +1,39 @@
+<Window x:Class="Postec.Caisse.Views.ArticleModale"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Produit" Width="600" Height="620" WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" Background="{StaticResource PostecFondBrush}">
+    <Grid Margin="28">
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+        <TextBlock x:Name="Titre" Text="Produit" FontSize="28" FontWeight="Bold" Foreground="{StaticResource PostecPrimaireBrush}"/>
+        <ScrollViewer Grid.Row="1" Margin="0,22,0,12" VerticalScrollBarVisibility="Auto">
+          <StackPanel>
+            <Border BorderBrush="{StaticResource PostecBordureBrush}" BorderThickness="1" Padding="10" Margin="0,0,0,12">
+              <StackPanel>
+                <TextBlock Text="Image du produit" Style="{StaticResource PostecLabel}"/>
+                <Image x:Name="ApercuImage" Height="180" Stretch="Uniform" Visibility="Collapsed" Margin="0,8"/>
+                <TextBlock x:Name="TexteAucuneImage" Text="Aucune image" Foreground="{StaticResource PostecTexteSecondaireBrush}" HorizontalAlignment="Center" Margin="0,8"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                  <Button Content="Parcourir..." Click="SurParcourirImage" Style="{StaticResource PostecButtonSecondary}"/>
+                  <Button x:Name="BoutonSupprimerImage" Content="Supprimer l'image" Click="SurSupprimerImage" Style="{StaticResource PostecButtonDanger}" Visibility="Collapsed"/>
+                </StackPanel>
+              </StackPanel>
+            </Border>
+            <TextBlock Text="Code" Style="{StaticResource PostecLabel}"/><TextBox x:Name="Code" Style="{StaticResource PostecInput}"/>
+            <TextBlock Text="Désignation" Style="{StaticResource PostecLabel}" Margin="0,12,0,0"/><TextBox x:Name="Designation" Style="{StaticResource PostecInput}"/>
+            <TextBlock Text="Prix de vente TTC" Style="{StaticResource PostecLabel}" Margin="0,12,0,0"/><TextBox x:Name="Prix" Style="{StaticResource PostecInput}"/>
+            <TextBlock Text="Famille" Style="{StaticResource PostecLabel}" Margin="0,12,0,0"/>
+            <ComboBox x:Name="Famille" DisplayMemberPath="Libelle" SelectedValuePath="Code" Style="{StaticResource PostecComboBoxInput}"/>
+            <TextBlock Text="Taux TVA" Style="{StaticResource PostecLabel}" Margin="0,12,0,0"/>
+            <ComboBox x:Name="Tva" DisplayMemberPath="Label" SelectedValuePath="Valeur" Style="{StaticResource PostecComboBoxInput}"/>
+            <TextBlock Text="Imprimante de destination" Style="{StaticResource PostecLabel}" Margin="0,12,0,0"/>
+            <ComboBox x:Name="Imprimante" DisplayMemberPath="Nom" SelectedValuePath="Id" Style="{StaticResource PostecComboBoxInput}"/>
+            <TextBlock x:Name="Erreur" Foreground="{StaticResource PostecDangerBrush}" Margin="0,8,0,0" TextWrapping="Wrap"/>
+          </StackPanel>
+        </ScrollViewer>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Annuler" IsCancel="True" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="Valider" IsDefault="True" Click="Valider_Click" Style="{StaticResource PostecButtonSuccess}"/>
+        </StackPanel>
+    </Grid>
+</Window>

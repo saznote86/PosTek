@@ -1,0 +1,18 @@
+<Window x:Class="Postec.Caisse.Views.ClientModale" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Client" Width="620" Height="650" WindowStartupLocation="CenterOwner" Background="{StaticResource PostecFondBrush}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="24">
+        <TextBlock x:Name="Titre" Text="Nouveau client" FontSize="26" FontWeight="Bold" Foreground="{StaticResource PostecPrimaireBrush}" Margin="0,0,0,16"/>
+        <TextBlock Text="Code" Style="{StaticResource PostecLabel}"/><TextBox x:Name="Code" Margin="0,4,0,8"/>
+        <TextBlock Text="Nom" Style="{StaticResource PostecLabel}"/><TextBox x:Name="Nom" Margin="0,4,0,8"/>
+        <TextBlock Text="Raison sociale" Style="{StaticResource PostecLabel}"/><TextBox x:Name="Raison" Margin="0,4,0,8"/>
+        <TextBlock Text="Adresse" Style="{StaticResource PostecLabel}"/><TextBox x:Name="Adresse" Margin="0,4,0,8"/>
+        <TextBlock Text="Ville" Style="{StaticResource PostecLabel}"/><TextBox x:Name="Ville" Margin="0,4,0,8"/>
+        <TextBlock Text="Code postal" Style="{StaticResource PostecLabel}"/><TextBox x:Name="Postal" Margin="0,4,0,8"/>
+        <TextBlock Text="Téléphone" Style="{StaticResource PostecLabel}"/><TextBox x:Name="Telephone" Margin="0,4,0,8"/>
+        <TextBlock Text="Email" Style="{StaticResource PostecLabel}"/><TextBox x:Name="Email" Margin="0,4,0,8"/>
+        <TextBlock Text="Matricule fiscal" Style="{StaticResource PostecLabel}"/><TextBox x:Name="Matricule" Margin="0,4,0,8"/>
+        <TextBlock Text="Régime TVA" Style="{StaticResource PostecLabel}"/><ComboBox x:Name="Regime" SelectedIndex="0" Margin="0,4,0,8"><ComboBoxItem Content="Normal"/><ComboBoxItem Content="Forfait"/><ComboBoxItem Content="Exonéré"/></ComboBox>
+        <TextBlock Text="Limite de crédit" Style="{StaticResource PostecLabel}"/><TextBox x:Name="Limite" Text="0.000" Margin="0,4,0,8"/>
+        <TextBlock x:Name="Erreur" Foreground="{StaticResource PostecAlerteBrush}" TextWrapping="Wrap" Margin="0,4,0,8"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"><Button Content="Annuler" IsCancel="True" Style="{StaticResource PostecButtonSecondary}"/><Button Content="Valider" Click="Valider_Click" IsDefault="True" Style="{StaticResource PostecButtonSuccess}"/></StackPanel>
+    </StackPanel></ScrollViewer>
+</Window>

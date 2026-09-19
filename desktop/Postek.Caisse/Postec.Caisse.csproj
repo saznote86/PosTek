@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Postec.Caisse</RootNamespace>
+    <AssemblyName>Postec.Caisse</AssemblyName>
+    <Version>0.1.0</Version>
+    <Product>POSTEC</Product>
+    <Company>POSTEC</Company>
+    <NeutralLanguage>fr</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.11" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\bip.wav" Link="bip.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="themes\postec.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Styles\PostecTheme.xaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="Services\saints.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

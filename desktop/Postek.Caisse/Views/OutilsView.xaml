@@ -1,0 +1,36 @@
+<UserControl x:Class="Postec.Caisse.Views.OutilsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{DynamicResource CouleurFond}"
+             AutomationProperties.AutomationId="OutilsView"
+             AutomationProperties.Name="VueOutils"
+             Focusable="True"
+             IsTabStop="True">
+    <DockPanel Margin="28">
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,18,0,0">
+            <TextBlock Text="{Binding Message}" Foreground="{DynamicResource CouleurTexteSecondaire}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            <Button DockPanel.Dock="Right" Content="Retour" Width="150" Command="{Binding RetourCommand}" Style="{StaticResource PostecButtonSuccess}"/>
+        </DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,20">
+            <TextBlock Text="OUTILS POSTEC" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource CouleurPrimaire}"/>
+            <TextBlock Text="Maintenance et sécurité" Foreground="{DynamicResource CouleurTexteSecondaire}"/>
+        </StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+            <StackPanel Margin="0,0,8,0">
+                <Button Content="Licence    Activer la licence POSTEC" Command="{Binding ActiverLicenceCommand}" Style="{StaticResource PostecButtonLarge}"/>
+                <Button Content="Réindexer    Réorganiser les données" Command="{Binding OuvrirReindexerCommand}" Style="{StaticResource PostecButtonLarge}"/>
+                <Button Content="Mots de passe" Command="{Binding OuvrirMotsDePasseCommand}" Style="{StaticResource PostecButtonLarge}"/>
+                <Button Content="Première installation    Initialiser" Command="{Binding PremiereInstallationCommand}" Style="{StaticResource PostecButtonLarge}"/>
+                <Button Content="Effacer données    Nettoyer" Command="{Binding EffacerDonneesCommand}" Style="{StaticResource PostecButtonDanger}"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                <Button Content="RAZ    Remise à zéro" Command="{Binding RemiseAZCommand}" Style="{StaticResource PostecButtonWarning}"/>
+                <Button Content="Horloge système    Régler date" Command="{Binding HorlogeCommand}" Style="{StaticResource PostecButtonLarge}"/>
+                <Button Content="Réparer index    Diagnostiquer" Command="{Binding ReparerIndexCommand}" Style="{StaticResource PostecButtonLarge}"/>
+                <Button Content="Test ports    Tester périphériques" Command="{Binding TestPortsCommand}" Style="{StaticResource PostecButtonLarge}"/>
+                <Button Content="Consolidation    Vérifier journaux" Command="{Binding ConsolidationCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</UserControl>

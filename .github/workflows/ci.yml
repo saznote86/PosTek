@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: postek
+        working-directory: .
     steps:
       - uses: actions/checkout@v4
 
@@ -45,7 +45,7 @@ jobs:
     runs-on: windows-latest
     defaults:
       run:
-        working-directory: postek/desktop
+        working-directory: desktop
     steps:
       - uses: actions/checkout@v4
 
@@ -66,10 +66,11 @@ jobs:
   tests-ecran:
     name: Tests écran UIA (app lancée)
     runs-on: windows-latest
+    timeout-minutes: 10
     needs: tests-dotnet
     defaults:
       run:
-        working-directory: postek
+        working-directory: .
     steps:
       - uses: actions/checkout@v4
 
@@ -84,7 +85,7 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Construire l'application (Release)
-        working-directory: postek/desktop
+        working-directory: desktop
         run: dotnet build Postek.Caisse/Postek.Caisse.csproj -c Release --nologo
 
       - name: Pilote UIA (comtypes)
@@ -108,6 +109,7 @@ jobs:
           python tools/test_f2_ui.py
           python tools/test_mix_ui.py
           python tools/test_clavier_ui.py
+          python tools/test_admin_ui.py
 
       - name: Diagnostic en cas d'échec
         if: failure()
@@ -125,8 +127,8 @@ jobs:
         with:
           name: diagnostic-tests-ecran
           path: |
-            postek/desktop/Postek.Caisse/bin/Release/net8.0-windows/imprimante.logique
-            postek/desktop/Postek.Caisse/bin/Release/net8.0-windows/postek_demo.db
+            desktop/Postek.Caisse/bin/Release/net8.0-windows/imprimante.logique
+            desktop/Postek.Caisse/bin/Release/net8.0-windows/postek_demo.db
           if-no-files-found: ignore
           retention-days: 7
 
@@ -146,9 +148,9 @@ jobs:
         run: |
           # L'app POSTEK (desktop) ne doit contenir aucune référence à
           # l'application d'origine — exigence cahier des charges §3.6.
-          # (Les mentions dans postek/docs, postek/migration… documentent la
-          # migration depuis l'existant et sont volontairement exclues.)
-          if grep -RniE 'atoo|leo2' postek/desktop/Postek.Caisse \
+          # (Les mentions dans docs/, migration/… documentent la migration
+          # depuis l'existant et sont volontairement exclues.)
+          if grep -RniE 'atoo|leo2' desktop/Postek.Caisse \
                --include='*.cs' --include='*.xaml' --include='*.json' \
                -l | grep -v '/obj/' | grep -v '/bin/'; then
             echo "::error::Références Atoo/Leo2 détectées dans le code POSTEK (voir liste ci-dessus)"

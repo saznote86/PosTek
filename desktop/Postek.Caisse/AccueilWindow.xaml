@@ -1,0 +1,8 @@
+<Window x:Class="Postec.Caisse.AccueilWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="POSTEC - Accueil" Width="1280" Height="800"
+        WindowState="Maximized" Background="{StaticResource PostecFondBrush}"
+        FontFamily="{StaticResource PostecPolice}">
+    <ContentControl x:Name="HoteNavigation"/>
+</Window>

@@ -1,0 +1,93 @@
+<UserControl x:Class="Postec.Caisse.Views.ProduitsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="{StaticResource PostecFondBrush}">
+    <Grid Margin="28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock Text="Produits" FontSize="32" FontWeight="Bold" Foreground="{StaticResource PostecPrimaireBrush}"/>
+            <TextBlock Text="Catalogue des produits" Style="{StaticResource PostecLabel}" Margin="0,4,0,16"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0"
+                     Text="{Binding Recherche, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource PostecInput}"
+                     ToolTip="Rechercher par code ou désignation"/>
+            <ComboBox Grid.Column="1"
+                      Margin="16,0,8,0"
+                      ItemsSource="{Binding Familles}"
+                      DisplayMemberPath="Libelle"
+                      SelectedValuePath="Code"
+                      SelectedValue="{Binding FamilleFiltre, UpdateSourceTrigger=PropertyChanged}"
+                      Style="{StaticResource PostecComboBoxInput}"/>
+            <Button Grid.Column="2"
+                    Content="Réinitialiser"
+                    Command="{Binding ReinitialiserFiltresCommand}"
+                    Style="{StaticResource PostecButtonSecondary}"
+                    Height="44"/>
+        </Grid>
+
+        <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding ArticlesFiltres}"
+                  SelectedItem="{Binding ArticleSelectionne, Mode=TwoWay}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  RowHeight="60"
+                  Margin="0,0,0,16">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Image" Width="70">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Width="60" Height="50">
+                                <Image Source="{Binding CheminImage, Converter={StaticResource CheminImageConverter}}"
+                                       Stretch="Uniform"
+                                       Visibility="{Binding CheminImage, Converter={StaticResource NullToVisibilityConverter}}"/>
+                                <TextBlock Text="📦" FontSize="24"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Visibility="{Binding CheminImage, Converter={StaticResource InverseNullToVisibilityConverter}}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Code" Binding="{Binding Code}" Width="100"/>
+                <DataGridTextColumn Header="Désignation" Binding="{Binding Designation}" Width="*"/>
+                <DataGridTextColumn Header="Prix TTC" Binding="{Binding PrixTtc, StringFormat={}{0:0.000}}" Width="120"/>
+                <DataGridTextColumn Header="Famille" Binding="{Binding NomFamille}" Width="140"/>
+                <DataGridTextColumn Header="TVA" Binding="{Binding TauxTva, StringFormat={}{0:P0}}" Width="70"/>
+                <DataGridTextColumn Header="Imprimante" Binding="{Binding NomImprimante}" Width="150"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Grid Grid.Row="3">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="{Binding NombreArticlesFiltres, StringFormat={}{0} produit(s)}" Style="{StaticResource PostecLabel}"/>
+                <TextBlock Text="  |  " Style="{StaticResource PostecLabel}"/>
+                <TextBlock Text="{Binding FamilleActive}" Style="{StaticResource PostecLabel}"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Nouveau" Command="{Binding NouveauCommand}" Style="{StaticResource PostecButtonSuccess}"/>
+                <Button Content="Modifier" Command="{Binding ModifierCommand}" Style="{StaticResource PostecButtonSecondary}"/>
+                <Button Content="Supprimer" Command="{Binding SupprimerCommand}" Style="{StaticResource PostecButtonDanger}"/>
+                <Button Content="Gérer les familles" Click="SurGererFamilles" Style="{StaticResource PostecButton}"/>
+                <Button Content="Retour" Command="{Binding RetourCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

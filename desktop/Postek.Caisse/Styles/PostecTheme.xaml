@@ -1,0 +1,188 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="PostecPrimaire">#1E3A8A</Color>
+    <Color x:Key="PostecSecondaire">#3B82F6</Color>
+    <Color x:Key="PostecAccent">#10B981</Color>
+    <Color x:Key="PostecDanger">#EF4444</Color>
+    <Color x:Key="PostecAvertissement">#F59E0B</Color>
+    <Color x:Key="PostecFond">#F3F4F6</Color>
+    <Color x:Key="PostecSurface">#FFFFFF</Color>
+    <Color x:Key="PostecTexte">#111827</Color>
+    <Color x:Key="PostecTexteSecondaire">#6B7280</Color>
+    <Color x:Key="PostecBordure">#D1D5DB</Color>
+
+    <SolidColorBrush x:Key="PostecPrimaireBrush" Color="{StaticResource PostecPrimaire}"/>
+    <SolidColorBrush x:Key="PostecSecondaireBrush" Color="{StaticResource PostecSecondaire}"/>
+    <SolidColorBrush x:Key="PostecAccentBrush" Color="{StaticResource PostecAccent}"/>
+    <SolidColorBrush x:Key="PostecDangerBrush" Color="{StaticResource PostecDanger}"/>
+    <SolidColorBrush x:Key="PostecAvertissementBrush" Color="{StaticResource PostecAvertissement}"/>
+    <SolidColorBrush x:Key="PostecFondBrush" Color="{StaticResource PostecFond}"/>
+    <SolidColorBrush x:Key="PostecSurfaceBrush" Color="{StaticResource PostecSurface}"/>
+    <SolidColorBrush x:Key="PostecTexteBrush" Color="{StaticResource PostecTexte}"/>
+    <SolidColorBrush x:Key="PostecTexteSecondaireBrush" Color="{StaticResource PostecTexteSecondaire}"/>
+    <SolidColorBrush x:Key="PostecBordureBrush" Color="{StaticResource PostecBordure}"/>
+
+    <FontFamily x:Key="PostecPolice">Segoe UI</FontFamily>
+    <DropShadowEffect x:Key="PostecOmbre" BlurRadius="16" ShadowDepth="2" Opacity="0.16" Color="#111827"/>
+    <Duration x:Key="PostecDureeHover">0:0:0.2</Duration>
+
+    <Style x:Key="PostecCarte" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource PostecSurfaceBrush}"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Padding" Value="16"/>
+        <Setter Property="Effect" Value="{StaticResource PostecOmbre}"/>
+    </Style>
+
+    <Style x:Key="PostecInput" TargetType="TextBox">
+        <Setter Property="Height" Value="44"/>
+        <Setter Property="Padding" Value="12,6"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Foreground" Value="{StaticResource PostecTexteBrush}"/>
+        <Setter Property="Background" Value="{StaticResource PostecSurfaceBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource PostecBordureBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="PostecComboBoxInput" TargetType="ComboBox">
+        <Setter Property="Height" Value="44"/>
+        <Setter Property="Padding" Value="12,6"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="Foreground" Value="{StaticResource PostecTexteBrush}"/>
+        <Setter Property="Background" Value="{StaticResource PostecSurfaceBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource PostecBordureBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="PostecButton" TargetType="Button">
+        <Setter Property="MinHeight" Value="48"/>
+        <Setter Property="Padding" Value="16,10"/>
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="FontSize" Value="15"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Background" Value="{StaticResource PostecPrimaireBrush}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bouton" Background="{TemplateBinding Background}"
+                            CornerRadius="8" Padding="{TemplateBinding Padding}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bouton" Property="Opacity" Value="0.88"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bouton" Property="Opacity" Value="0.72"/>
+                            <Setter TargetName="Bouton" Property="RenderTransform">
+                                <Setter.Value><ScaleTransform ScaleX="0.98" ScaleY="0.98"/></Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Bouton" Property="Opacity" Value="0.42"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="PostecButtonPayer" TargetType="Button" BasedOn="{StaticResource PostecButton}">
+        <Setter Property="Background" Value="{StaticResource PostecAccentBrush}"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="MinHeight" Value="60"/>
+    </Style>
+    <Style x:Key="PostecButtonSuccess" TargetType="Button" BasedOn="{StaticResource PostecButtonPayer}"/>
+    <Style x:Key="PostecButtonDanger" TargetType="Button" BasedOn="{StaticResource PostecButton}">
+        <Setter Property="Background" Value="{StaticResource PostecDangerBrush}"/>
+    </Style>
+    <Style x:Key="PostecButtonWarning" TargetType="Button" BasedOn="{StaticResource PostecButton}">
+        <Setter Property="Background" Value="{StaticResource PostecAvertissementBrush}"/>
+    </Style>
+    <Style x:Key="PostecButtonSecondary" TargetType="Button" BasedOn="{StaticResource PostecButton}">
+        <Setter Property="Background" Value="{StaticResource PostecSecondaireBrush}"/>
+    </Style>
+    <Style x:Key="PostecButtonLarge" TargetType="Button" BasedOn="{StaticResource PostecButton}">
+        <Setter Property="MinHeight" Value="86"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="Background" Value="{StaticResource PostecSurfaceBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource PostecPrimaireBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource PostecSecondaireBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+    <Style x:Key="PostecKeypadButton" TargetType="Button" BasedOn="{StaticResource PostecButton}">
+        <Setter Property="Width" Value="80"/>
+        <Setter Property="Height" Value="80"/>
+        <Setter Property="MinHeight" Value="80"/>
+        <Setter Property="FontSize" Value="26"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Background" Value="{StaticResource PostecPrimaireBrush}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Touche" Background="{TemplateBinding Background}"
+                            CornerRadius="8" RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform><ScaleTransform ScaleX="1" ScaleY="1"/></Border.RenderTransform>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Touche" Property="Opacity" Value="0.88"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Touche" Property="Opacity" Value="0.7"/>
+                            <Setter TargetName="Touche" Property="RenderTransform">
+                                <Setter.Value><ScaleTransform ScaleX="0.95" ScaleY="0.95"/></Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ToucheArticle" TargetType="Button" BasedOn="{StaticResource PostecButton}">
+        <Setter Property="Width" Value="110"/>
+        <Setter Property="Height" Value="120"/>
+        <Setter Property="MinHeight" Value="0"/>
+        <Setter Property="Margin" Value="2"/>
+        <Setter Property="Padding" Value="8"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="{StaticResource PostecTexteBrush}"/>
+        <Setter Property="Background" Value="{StaticResource PostecSurfaceBrush}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+    </Style>
+
+    <Style x:Key="PostecLabel" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource PostecTexteSecondaireBrush}"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+
+    <Style x:Key="PostecMontant" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource PostecPrimaireBrush}"/>
+        <Setter Property="FontSize" Value="28"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+    </Style>
+
+    <Style x:Key="PostecBadge" TargetType="Border">
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Padding" Value="10,4"/>
+        <Setter Property="Background" Value="{StaticResource PostecAccentBrush}"/>
+    </Style>
+</ResourceDictionary>

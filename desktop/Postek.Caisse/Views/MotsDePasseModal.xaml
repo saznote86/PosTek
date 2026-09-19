@@ -1,0 +1,26 @@
+<Window x:Class="Postec.Caisse.Views.MotsDePasseModal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Mots de passe" Width="650" Height="480" WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource CouleurFond}">
+    <DockPanel Margin="24">
+        <TextBlock DockPanel.Dock="Top" Text="Mots de passe" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource CouleurPrimaire}" Margin="0,0,0,16"/>
+        <Button DockPanel.Dock="Bottom" Content="Valider" Width="130" HorizontalAlignment="Right" Command="{Binding ValiderCommand}" Style="{StaticResource PostecButtonSuccess}"/>
+        <TabControl>
+            <TabItem Header="Mots de passe"><TextBlock Text="Gestion des mots de passe utilisateurs." Margin="18"/></TabItem>
+            <TabItem Header="Fonctions caisse"><TextBlock Text="Protection des fonctions caisse." Margin="18"/></TabItem>
+            <TabItem Header="Accès gestion"><TextBlock Text="Protection de l'accès gestion." Margin="18"/></TabItem>
+            <TabItem Header="CLÉ USB">
+                <StackPanel Margin="18">
+                    <TextBlock Text="Écrivez un marqueur sécurisé sur une clé USB pour les opérations sensibles." TextWrapping="Wrap" Margin="0,0,0,18"/>
+                    <TextBlock Text="Lecteur USB"/>
+                    <ComboBox ItemsSource="{Binding Lecteurs}" SelectedItem="{Binding Lecteur}" Height="36" Margin="0,4,0,12"/>
+                    <TextBlock Text="Secret"/>
+                    <TextBox Text="{Binding Secret, UpdateSourceTrigger=PropertyChanged}" Height="36" Margin="0,4,0,12"/>
+                    <StackPanel Orientation="Horizontal"><Button Content="Écrire" Command="{Binding EcrireCommand}" Style="{StaticResource PostecButtonSuccess}"/><Button Content="Effacer" Command="{Binding EffacerCommand}" Style="{StaticResource PostecButtonDanger}"/></StackPanel>
+                    <TextBlock Text="{Binding Message}" Margin="0,12" Foreground="{DynamicResource CouleurTexteSecondaire}" TextWrapping="Wrap"/>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

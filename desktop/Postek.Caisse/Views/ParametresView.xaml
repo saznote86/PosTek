@@ -1,0 +1,33 @@
+<UserControl x:Class="Postec.Caisse.Views.ParametresView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource PostecFondBrush}">
+    <DockPanel Margin="28">
+        <Grid DockPanel.Dock="Top" Margin="0,0,0,14"><TextBlock Text="Parametres Generaux" FontSize="28" FontWeight="Bold" Foreground="{StaticResource PostecPrimaireBrush}"/><Button Content="Activer Traduction" Style="{StaticResource PostecButtonSecondary}" HorizontalAlignment="Right"/></Grid>
+        <TabControl>
+            <TabItem Header="Tri/Famille &amp; Divers"><TextBlock Text="Parametres de tri et familles" Margin="20"/></TabItem>
+            <TabItem Header="Touches Progr. &amp; Securite"><TextBlock Text="Touches et securite" Margin="20"/></TabItem>
+            <TabItem Header="Groupe/Famille"><TextBlock Text="Groupes et familles" Margin="20"/></TabItem>
+            <TabItem Header="Clients"><TextBlock Text="Parametres clients" Margin="20"/></TabItem>
+            <TabItem Header="Generaux">
+                <DataGrid ItemsSource="{Binding Parametres}" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,12" RowHeight="46">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Code" Binding="{Binding Code}" Width="150" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Valeur" Binding="{Binding Valeur, UpdateSourceTrigger=PropertyChanged}" Width="180"/>
+                        <DataGridTextColumn Header="Complement" Binding="{Binding Complement}" Width="180"/>
+                        <DataGridTextColumn Header="Obs" Binding="{Binding Observation}" Width="*" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="Caisse n°1"><TextBlock Text="Parametres de caisse" Margin="20"/></TabItem>
+            <TabItem Header="Peripheriques"><TextBlock Text="Imprimante et peripheriques" Margin="20"/></TabItem>
+            <TabItem Header="Libelles Perso"><TextBlock Text="Libelles personnalises" Margin="20"/></TabItem>
+            <TabItem Header="Pension/Hors-ca"><TextBlock Text="Pension et hors caisse" Margin="20"/></TabItem>
+            <TabItem Header="Tiroir &amp; CB"><TextBlock Text="Tiroir et carte bancaire" Margin="20"/></TabItem>
+        </TabControl>
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,14,0,0">
+            <StackPanel Orientation="Horizontal"><TextBlock Text="Utiliser Clavier Tactile" VerticalAlignment="Center" Margin="0,0,12,0"/><RadioButton Content="Non" IsChecked="True" Margin="4"/><RadioButton Content="Oui" Margin="4"/></StackPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"><Button Content="Abandon" Style="{StaticResource PostecButtonDanger}" Click="SurAbandon"/><Button Content="Valider" Style="{StaticResource PostecButtonSuccess}" Click="SurValider"/></StackPanel>
+        </DockPanel>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,33 @@
+<UserControl x:Class="Postec.Caisse.Views.MenuGestionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource PostecFondBrush}"
+             AutomationProperties.AutomationId="MenuGestionView"
+             AutomationProperties.Name="VueMenuGestion"
+             Focusable="True"
+             IsTabStop="True">
+    <DockPanel Margin="28">
+        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,20">
+            <TextBlock Text="Menu Gestion" FontSize="28" FontWeight="Bold" Foreground="{StaticResource PostecPrimaireBrush}"/>
+            <TextBlock Text="Administration et gestion POSTEC" Foreground="{StaticResource PostecTexteSecondaireBrush}"/>
+        </StackPanel>
+        <UniformGrid Columns="4" Rows="4">
+            <Button Content="⚙  Parametres et Reglages" Command="{Binding ParametresCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="⌘  Programmation Avancee" Command="{Binding ProgrammationAvanceeCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="▦  Claviers Tactiles" Command="{Binding ClaviersTactilesCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="▣  Produits" Command="{Binding ProduitsCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="▦  Familles" Command="{Binding FamillesCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="♙  Vendeurs" Command="{Binding VendeursCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="▤  Mot de Passe" Command="{Binding MotDePasseCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="↔  Ventilations et Tarifs" Command="{Binding VentilationsTarifsCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="♙  Clients" Command="{Binding ClientsCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="▤  Comptabilite et Statistiques" Command="{Binding ComptabiliteCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="▤  Historique des Tickets" Command="{Binding HistoriqueTicketsCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="◷  Clotures" Command="{Binding CloturesCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="⚒  Outils" Command="{Binding OutilsCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="⟳  Reindexer" Command="{Binding ReindexerCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="◴  Reglage Date-Heure" Command="{Binding ReglageDateHeureCommand}" Style="{StaticResource PostecButtonLarge}"/>
+            <Button Content="←  RETOUR" Command="{Binding RetourCommand}" Style="{StaticResource PostecButtonDanger}"/>
+        </UniformGrid>
+    </DockPanel>
+</UserControl>

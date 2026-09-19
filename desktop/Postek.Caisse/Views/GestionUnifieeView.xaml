@@ -1,0 +1,14 @@
+<UserControl x:Class="Postec.Caisse.Views.GestionUnifieeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Postec.Caisse.Views.Controls"
+             Background="{DynamicResource CouleurFond}"
+             AutomationProperties.AutomationId="GestionUnifieeView"
+             AutomationProperties.Name="Onglet Gestion"
+             Focusable="True"
+             IsTabStop="True">
+    <controls:AutomationContentControl x:Name="HoteNavigation"
+                                       AutomationProperties.AutomationId="HoteGestionUnifiee"
+                                       AutomationProperties.Name="ZoneContenuGestion"
+                                       Focusable="True"/>
+</UserControl>

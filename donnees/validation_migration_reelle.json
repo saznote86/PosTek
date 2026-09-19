@@ -1,0 +1,18 @@
+{
+  "base": "X:\\ATOO_LEO2_NACEF\\postek\\donnees\\test_migration_reelle.db",
+  "entites": {
+    "Produits": 76,
+    "Clients": 0,
+    "Fournisseurs": 0,
+    "Utilisateurs": 0,
+    "Mouvements": 0,
+    "Ventes": 0,
+    "Familles": 12
+  },
+  "incoherences": {
+    "mouvements_produit_inconnu": 0,
+    "mouvements_client_inconnu": 0,
+    "produits_sans_famille": 0,
+    "utilisateurs_sans_role": 0
+  }
+}

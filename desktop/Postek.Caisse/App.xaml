@@ -1,0 +1,15 @@
+<Application x:Class="Postec.Caisse.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Postec.Caisse.Converters">
+    <Application.Resources>
+        <ResourceDictionary>
+            <converters:CheminImageConverter x:Key="CheminImageConverter"/>
+            <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <converters:InverseNullToVisibilityConverter x:Key="InverseNullToVisibilityConverter"/>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/PostecTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,143 @@
+<Window x:Class="Postec.Caisse.FenetrePaiement"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Encaissement"
+        Width="980" Height="700"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{StaticResource PostecFondBrush}"
+        FontFamily="{StaticResource PostecPolice}">
+
+    <Window.Resources>
+        <Style x:Key="Touche" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource CouleurToucheFond}"/>
+            <Setter Property="Foreground" Value="{DynamicResource CouleurToucheTexte}"/>
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bordure" CornerRadius="10" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bordure" Property="Background"
+                                        Value="{DynamicResource CouleurToucheFondActif}"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bordure" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="60*"/>
+            <ColumnDefinition Width="40*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Colonne gauche : total, règlements saisis, actions -->
+        <DockPanel Grid.Column="0">
+            <Border DockPanel.Dock="Top" Background="{DynamicResource CouleurSurface}"
+                    CornerRadius="12" Padding="14" Margin="0,0,8,10">
+                <StackPanel>
+                    <TextBlock Text="Règlement du ticket" FontSize="16"
+                               Foreground="{DynamicResource CouleurTexteSecondaire}"/>
+                    <TextBlock Text="Sous-total et TVA inclus dans le total caisse"
+                               FontSize="13" Margin="0,2,0,8"
+                               Foreground="{DynamicResource CouleurTexteSecondaire}"/>
+                    <TextBlock x:Name="TexteAPayer" Text="0,000 TND" FontSize="40" FontWeight="Bold"
+                               Foreground="{DynamicResource CouleurTexte}"/>
+                    <TextBlock Text="Timbre fiscal : 1,000 TND si le ticket est taxable"
+                               FontSize="13" Margin="0,5,0,0"
+                               Foreground="{DynamicResource CouleurTexteSecondaire}"/>
+                    <TextBlock x:Name="TexteReste" Text="Reste à payer : 0,000 TND" FontSize="18"
+                               Foreground="{DynamicResource CouleurTexteSecondaire}"/>
+                </StackPanel>
+            </Border>
+
+            <Border DockPanel.Dock="Bottom" Background="{DynamicResource CouleurSurface}"
+                    CornerRadius="12" Padding="12" Margin="0,10,8,0">
+                <DockPanel>
+                        <Button DockPanel.Dock="Left" x:Name="BoutonRetour" Content="Annuler"
+                            Style="{StaticResource PostecButtonDanger}" Width="150" Height="52"
+                            Click="SurRetour"/>
+                        <Button x:Name="BoutonValider" Content="Payer et valider"
+                            Style="{StaticResource PostecButtonPayer}" Height="52"
+                            IsEnabled="False"
+                            Click="SurValider"/>
+                </DockPanel>
+            </Border>
+
+            <ListBox x:Name="ListeReglements" Background="Transparent"
+                     Foreground="{DynamicResource CouleurTexte}"
+                     FontSize="17" BorderThickness="0" Margin="0,0,8,0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Margin="2,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{Binding LibelleMode}" FontSize="17"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding MontantAffiche}" FontSize="17" FontWeight="Bold"
+                                       Foreground="{DynamicResource CouleurTexte}"/>
+                            <Button Grid.Column="2" Content="✕" Margin="10,0,0,0"
+                                    Style="{StaticResource Touche}" Width="40" Height="34"
+                                    Click="SurSupprimerReglement"
+                                    Tag="{Binding}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <!-- Colonne droite : pavé numérique + modes de règlement -->
+        <DockPanel Grid.Column="1">
+            <Border DockPanel.Dock="Top" Background="{DynamicResource CouleurSurface}"
+                    CornerRadius="12" Padding="12" Margin="8,0,0,8">
+                <StackPanel>
+                    <TextBlock Text="Saisie" FontSize="14"
+                               Foreground="{DynamicResource CouleurTexteSecondaire}"/>
+                    <TextBlock x:Name="TexteSaisie" Text="0,000" FontSize="34" FontWeight="Bold"
+                               Foreground="{DynamicResource CouleurTexte}"/>
+                </StackPanel>
+            </Border>
+
+            <UniformGrid Columns="2" DockPanel.Dock="Bottom">
+                <Button Content="Espèces" Style="{StaticResource Touche}" Height="58" Click="SurModeEspeces"/>
+                <Button Content="CB" Style="{StaticResource Touche}" Height="58" Click="SurModeCb"/>
+                <Button Content="Chèque" Style="{StaticResource Touche}" Height="58" Click="SurModeCheque"/>
+                <Button Content="Ticket resto" Style="{StaticResource Touche}" Height="58" Click="SurModeTicketResto"/>
+                <Button Content="Avoir" Style="{StaticResource Touche}" Height="58" Click="SurModeAvoir"/>
+                <Button Content="C" Style="{StaticResource Touche}" Height="58" Click="SurEffacerSaisie"/>
+            </UniformGrid>
+
+            <UniformGrid Columns="3" DockPanel.Dock="Bottom">
+                <Button Content="7" Style="{StaticResource Touche}" Height="58" Click="SurChiffre" Tag="7"/>
+                <Button Tag="8" Content="8" Style="{StaticResource Touche}" Height="58" Click="SurChiffre"/>
+                <Button Content="9" Style="{StaticResource Touche}" Height="58" Click="SurChiffre" Tag="9"/>
+                <Button Content="4" Style="{StaticResource Touche}" Height="58" Click="SurChiffre" Tag="4"/>
+                <Button Content="5" Style="{StaticResource Touche}" Height="58" Click="SurChiffre" Tag="5"/>
+                <Button Content="6" Style="{StaticResource Touche}" Height="58" Click="SurChiffre" Tag="6"/>
+                <Button Content="1" Style="{StaticResource Touche}" Height="58" Click="SurChiffre" Tag="1"/>
+                <Button Content="2" Style="{StaticResource Touche}" Height="58" Click="SurChiffre" Tag="2"/>
+                <Button Content="3" Style="{StaticResource Touche}" Height="58" Click="SurChiffre" Tag="3"/>
+                <Button Content="0" Style="{StaticResource Touche}" Height="58" Click="SurChiffre" Tag="0"/>
+                <Button Content="," Style="{StaticResource Touche}" Height="58" Click="SurChiffre" Tag=","/>
+                <Button Content="⌫" Style="{StaticResource Touche}" Height="58" Click="SurRetourArriere"/>
+            </UniformGrid>
+        </DockPanel>
+    </Grid>
+</Window>

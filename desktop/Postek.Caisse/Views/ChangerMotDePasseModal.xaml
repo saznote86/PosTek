@@ -1,0 +1,24 @@
+<Window x:Class="Postec.Caisse.Views.ChangerMotDePasseModal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="POSTEC - Changement de mot de passe" Width="480" Height="360"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="{DynamicResource CouleurFond}">
+    <DockPanel Margin="28">
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="Changement obligatoire" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource CouleurPrimaire}"/>
+            <TextBlock Text="Pour continuer, définissez un nouveau mot de passe." Margin="0,8,0,20" TextWrapping="Wrap"/>
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Annuler" Command="{Binding AnnulerCommand}" Style="{StaticResource PostecButtonDanger}"/>
+            <Button Content="Valider" Command="{Binding ValiderCommand}" Style="{StaticResource PostecButtonSuccess}"/>
+        </StackPanel>
+        <StackPanel>
+            <TextBlock Text="Nouveau mot de passe" Style="{StaticResource PostecLabel}"/>
+            <PasswordBox x:Name="NouveauMotDePasse" Height="42" PasswordChanged="SurNouveauMotDePasseChange"/>
+            <TextBlock Text="Confirmation" Style="{StaticResource PostecLabel}" Margin="0,12,0,0"/>
+            <PasswordBox x:Name="Confirmation" Height="42" PasswordChanged="SurConfirmationChange"/>
+            <TextBlock Text="{Binding Message}" Foreground="{DynamicResource CouleurAlerte}" TextWrapping="Wrap" Margin="0,12,0,0"/>
+        </StackPanel>
+    </DockPanel>
+</Window>

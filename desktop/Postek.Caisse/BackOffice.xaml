@@ -1,0 +1,130 @@
+<Window x:Class="Postec.Caisse.BackOffice"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="POSTEC - Back-Office"
+        Width="1240" Height="760"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource CouleurFond}"
+        FontFamily="{DynamicResource FamillePolice}">
+    <Window.Resources>
+        <Style x:Key="MenuBouton" TargetType="Button">
+            <Setter Property="Height" Value="52"/>
+            <Setter Property="Margin" Value="0,4"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        <Style x:Key="ActionBouton" TargetType="Button">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="{DynamicResource CouleurPrimaire}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="0" Background="{DynamicResource CouleurPrimaire}" Padding="16">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Text="POSTEC" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                    <TextBlock Text="Back-Office" FontSize="16" Foreground="#D1FAE5" Margin="0,2,0,24"/>
+                </StackPanel>
+                <StackPanel>
+                    <Button x:Name="BoutonEtats" Content="États fiscaux" Style="{StaticResource MenuBouton}" Click="SurEtats"/>
+                    <Button x:Name="BoutonComptabilite" Content="Comptabilité" Style="{StaticResource MenuBouton}" Click="SurComptabilite"/>
+                    <Button x:Name="BoutonAdministration" Content="Administration" Style="{StaticResource MenuBouton}" Click="SurAdministration"/>
+                    <Button x:Name="BoutonCloture" Content="Clôture de caisse  F8" Style="{StaticResource MenuBouton}" Click="SurCloture"/>
+                    <Button x:Name="BoutonUtilisateurs" Content="Utilisateurs &amp; Audit" Style="{StaticResource MenuBouton}" Background="#0F766E" Click="SurUtilisateurs"/>
+                    <Button x:Name="BoutonMigration" Content="Migration de données" Style="{StaticResource MenuBouton}" Click="SurMigration"/>
+                </StackPanel>
+                <Button DockPanel.Dock="Bottom" Content="Fermer" Style="{StaticResource MenuBouton}" Click="SurFermer"/>
+            </DockPanel>
+        </Border>
+        <Grid Grid.Column="1" Margin="26" AutomationProperties.Name="Shell Back-Office">
+            <Grid x:Name="PageUtilisateurs">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Utilisateurs &amp; journal d'audit" FontSize="26" FontWeight="Bold"/>
+                    <TextBlock Text="Gérez les accès humains et contrôlez les opérations sensibles."
+                               Foreground="{DynamicResource CouleurTexteSecondaire}" Margin="0,4,0,18"/>
+                </StackPanel>
+                <Grid Grid.Row="1" Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="150"/><ColumnDefinition Width="120"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,8,0">
+                        <TextBlock Text="Identifiant"/>
+                        <TextBox x:Name="ChampIdentifiant" Height="34"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="8,0">
+                        <TextBlock Text="Nom affiché"/>
+                        <TextBox x:Name="ChampNom" Height="34"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Margin="8,0">
+                        <TextBlock Text="Rôle"/>
+                        <ComboBox x:Name="ChampRole" Height="34" SelectedIndex="1">
+                            <ComboBoxItem Content="Administrateur"/>
+                            <ComboBoxItem Content="Caissier"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="3" Margin="8,0,0,0">
+                        <TextBlock Text="Mot de passe"/>
+                        <PasswordBox x:Name="ChampMotDePasse" Height="34"/>
+                    </StackPanel>
+                </Grid>
+                <DockPanel Grid.Row="2">
+                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Nouvel utilisateur" Style="{StaticResource ActionBouton}" Click="SurNouveau"/>
+                        <Button Content="Enregistrer" Style="{StaticResource ActionBouton}" Click="SurEnregistrer"/>
+                        <Button Content="Supprimer" Background="#DC2626" Style="{StaticResource ActionBouton}" Click="SurSupprimer"/>
+                        <Button Content="Actualiser audit" Style="{StaticResource ActionBouton}" Click="SurActualiserAudit"/>
+                        <Button Content="Effacer l'historique des connexions" Background="#D97706"
+                                Style="{StaticResource ActionBouton}" Click="SurEffacerHistorique"/>
+                    </StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <DataGrid x:Name="ListeUtilisateurs" Grid.Column="0" Margin="0,0,10,0"
+                                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                                  SelectionChanged="SurSelectionUtilisateur">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Identifiant" Binding="{Binding Identifiant}" Width="*"/>
+                                <DataGridTextColumn Header="Nom" Binding="{Binding NomAffiche}" Width="*"/>
+                                <DataGridTextColumn Header="Rôle" Binding="{Binding Role}" Width="130"/>
+                                <DataGridCheckBoxColumn Header="Actif" Binding="{Binding Actif}" Width="55"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <DataGrid x:Name="ListeAudit" Grid.Column="1" Margin="10,0,0,0"
+                                  AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Date" Binding="{Binding Horodatage}" Width="150"/>
+                                <DataGridTextColumn Header="Utilisateur" Binding="{Binding Identifiant}" Width="110"/>
+                                <DataGridTextColumn Header="Action" Binding="{Binding Action}" Width="130"/>
+                                <DataGridTextColumn Header="Détails" Binding="{Binding Details}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </DockPanel>
+            </Grid>
+            <Border x:Name="PageIndisponible" Visibility="Collapsed" Background="{DynamicResource CouleurSurface}" CornerRadius="12" Padding="30">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock x:Name="TitrePage" Text="États fiscaux" FontSize="28" FontWeight="Bold"/>
+                    <TextBlock Text="Cette vue sera connectée au noyau fiscal NACEF dans le prochain module."
+                               Margin="0,10,0,0" Foreground="{DynamicResource CouleurTexteSecondaire}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

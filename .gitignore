@@ -1,31 +1,40 @@
-# Histoires d'agent
-.aider*
-
 # ============================================================
-#  Périmètre du dépôt : le code POSTEK uniquement.
-#  La racine contient les données de l'existant Leo2 (WinDev 14) :
-#  bases .FIC/.ndx, exécutables, BMP, historiques de caisse…
-#  → tout est ignoré par défaut ; seuls les chemins listés
-#    ci-dessous sont ré-inclus (whitelist).
+#  Dépôt : code POSTEC uniquement.
+#  Structure (restructuration du 2026-09-18) : le code vit à la
+#  racine (desktop/, fiscal/, licence/, migration/, tests/,
+#  tools/, docs/, donnees/) — le dossier postek/ historique a
+#  disparu. Bases SQLite locales, backups et artefacts restent
+#  hors versionnement.
 # ============================================================
-/*
-!/postek/
-!/start.bat
-!/.gitignore
-!/.github/
 
 # Artefacts de build .NET
 bin/
 obj/
 
-# Bases de données locales de l'app POSTEK
-postek/desktop/Postek.Caisse/bin/**/*.db
+# Bases de données et données locales de l'app POSTEC
+*.db
+desktop/Postek.Caisse/bin/**/*.db
+donnees/*
+!donnees/*.json
 imprimante.logique
+
+# Backups de base à la racine
+postek_*_backup_*.db
+postek_demo_backup_*.db
+*_backup_testraz_*.db
+rapport_migration.json
+
+# Logs et données d'exécution locales
+postek_demarrage.log
+raz_log.txt
 
 # Python
 __pycache__/
 *.pyc
+.venv/
 
 # Données réelles de migration (client) : hors dépôt
 export_leo2/
-postek/donnees/
+
+# Histoires d'agent
+.aider*
