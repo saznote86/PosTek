@@ -55,13 +55,13 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Restorer
-        run: dotnet restore Postek.Caisse.Tests/Postek.Caisse.Tests.csproj
+        run: dotnet restore Postek.Caisse.Tests/Postec.Caisse.Tests.csproj
 
       - name: Construire
-        run: dotnet build Postek.Caisse.Tests/Postek.Caisse.Tests.csproj --no-restore -c Release --nologo
+        run: dotnet build Postek.Caisse.Tests/Postec.Caisse.Tests.csproj --no-restore -c Release --nologo
 
       - name: Tester
-        run: dotnet test Postek.Caisse.Tests/Postek.Caisse.Tests.csproj --no-build -c Release -v minimal
+        run: dotnet test Postek.Caisse.Tests/Postec.Caisse.Tests.csproj --no-build -c Release -v minimal
 
   tests-ecran:
     name: Tests écran UIA (app lancée)
@@ -86,7 +86,7 @@ jobs:
 
       - name: Construire l'application (Release)
         working-directory: desktop
-        run: dotnet build Postek.Caisse/Postek.Caisse.csproj -c Release --nologo
+        run: dotnet build Postek.Caisse/Postec.Caisse.csproj -c Release --nologo
 
       - name: Pilote UIA (comtypes)
         run: pip install comtypes
@@ -98,9 +98,9 @@ jobs:
           # (un lancement bash le tuerait avec le shell) ; ne PAS utiliser
           # -WindowStyle Hidden, qui masque la fenêtre WPF à UIA.
           $bin = Join-Path (Get-Location) "desktop\Postek.Caisse\bin\Release\net8.0-windows"
-          Start-Process -FilePath (Join-Path $bin "Postek.Caisse.exe") -WorkingDirectory $bin
+          Start-Process -FilePath (Join-Path $bin "Postec.Caisse.exe") -WorkingDirectory $bin
           Start-Sleep -Seconds 6
-          if (-not (Get-Process -Name Postek.Caisse -ErrorAction SilentlyContinue)) {
+          if (-not (Get-Process -Name Postec.Caisse -ErrorAction SilentlyContinue)) {
             throw "L'application POSTEK ne s'est pas lancée"
           }
 
@@ -115,7 +115,7 @@ jobs:
         if: failure()
         shell: powershell
         run: |
-          Get-Process -Name Postek.Caisse -ErrorAction SilentlyContinue |
+          Get-Process -Name Postec.Caisse -ErrorAction SilentlyContinue |
             Format-List Id, MainWindowTitle, Responding
           Add-Type -AssemblyName System.Windows.Forms
           [System.Windows.Forms.Screen]::AllScreens |
@@ -128,14 +128,14 @@ jobs:
           name: diagnostic-tests-ecran
           path: |
             desktop/Postek.Caisse/bin/Release/net8.0-windows/imprimante.logique
-            desktop/Postek.Caisse/bin/Release/net8.0-windows/postek_demo.db
+            desktop/Postek.Caisse/bin/Release/net8.0-windows/postec_demo.db
           if-no-files-found: ignore
           retention-days: 7
 
       - name: Arrêter l'application
         if: always()
         shell: powershell
-        run: Stop-Process -Name Postek.Caisse -Force -ErrorAction SilentlyContinue
+        run: Stop-Process -Name Postec.Caisse -Force -ErrorAction SilentlyContinue
 
   rebranding:
     name: Garde-fou rebranding (aucun texte Atoo/Leo2 dans POSTEK)
